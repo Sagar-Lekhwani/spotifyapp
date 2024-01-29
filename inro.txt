@@ -1,0 +1,57 @@
+user music sujn sake
+user playlist create kr sake
+user music like kr sake
+user playulist mai music add kr sake
+user song playlist
+search songs
+
+
+
+userschema:
+         username
+         email
+         contact
+         playlists[]
+         liked[]
+         profileimage
+         password
+         isadmin
+
+songs schema :
+         title
+         artist
+         category[]
+         likes[]
+         size
+         poster
+
+playlist schema:
+        name:
+        owner:
+        songs[songsid]
+        poster
+
+playlistcreate
+user know the playlist
+songs if already added then remove from that playlist
+
+
+if admin then upload the music
+user can listen now
+skip 10sec
+play/pause
+next/previous
+add on playlist
+loop
+sahuffle
+searching
+like if already then remove the like
+suggesstions
+
+
+user register/login  default playist assign
+playlist create/ add new song /remove
+song like
+search songs
+songs play
+

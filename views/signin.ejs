@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bootstrap demo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="stylesheet" href="../stylesheets/style.css">
+  </head>
+  <body>
+
+    
+ <img class="main-logo" src="https://storage.googleapis.com/pr-newsroom-wp/1/2018/11/Spotify_Logo_CMYK_Green.png">
+
+
+ <div class="main"></div>
+   
+ <form class="first" action="/login" method="post">
+  
+  <div class="logo">
+   <img src="https://storage.googleapis.com/pr-newsroom-wp/1/2018/11/Spotify_Logo_CMYK_Green.png">
+ </div>
+   
+   <div class="sign-box">
+     <p id="A" style="border-bottom: 2.3px solid #1db954;">sign in</p>
+     <p id="B">sign up</p>
+   </div>
+   
+     <span id="msg"></span>
+   
+   <input name="username" type="name" placeholder="Username" class="inp-Box name"/>
+   
+   <br>
+   
+  <input name="password" type="password" placeholder="Password" class="inp-Box psd"/>
+   
+   <br>
+   
+   <div class="check">
+     <input type="checkbox" id="check">
+     <label for="check" id="checkMsg">stay signed in</label>
+   </div>
+   
+   <input type="submit" value="sign in" class="inp-Box submit">
+   
+   <p class="forgot-Psd">forgot password?</p>
+ </form>
+ 
+ <form action="/register" method="post" class="second">
+  
+  <div class="logo">
+   <img src="https://storage.googleapis.com/pr-newsroom-wp/1/2018/11/Spotify_Logo_CMYK_Green.png">
+ </div>
+   
+   <div class="sign-box">
+     <p id="A">sign in</p>
+     <p id="B" style="border-bottom: 2.3px solid #1db954;">sign up</p>
+   </div>
+   
+     <span id="msg"></span>
+   
+   <input name="username" type="name" placeholder="Username" class="inp-Box name"/>
+   <input name="email" type="name" placeholder="Email" class="inp-Box name"/>
+   <input name="password" type="password" placeholder="New Password" class="inp-Box psd"/>
+   
+   <br>
+   
+   <div class="check">
+     <input type="checkbox" id="check">
+     <label for="check" id="checkMsg">stay signed in</label>
+   </div>
+   
+   <input type="submit" value="sign up" class="inp-Box submit">
+   
+ </form>
+ 
+ 
+ <p class="note">Please log in to listen to your favorite song...</p>
+   
+ 
+ <script>
+  
+
+const check = document.querySelector('#check');
+const checkMsg = document.querySelector('#checkMsg');
+
+const name = document.querySelector('.name');
+const psd = document.querySelector('.psd');
+const msg = document.querySelector('#msg');
+const form1 = document.querySelector('.first');
+const form2 = document.querySelector('.second');
+const A = document.querySelectorAll('#A');
+const B = document.querySelectorAll('#B');
+const p = document.querySelectorAll('.sign-box > p')
+
+A.forEach(element => {
+  element.addEventListener('click' , () => {
+    form1.style.zIndex = 1;
+    form2.style.zIndex = -1;
+  })
+});
+
+B.forEach(element => {
+  element.addEventListener('click' , () => {
+    form2.style.zIndex = 1;
+    form1.style.zIndex = -1;
+  })
+});
+
+
+
+
+const main = document.querySelector('.main');
+
+
+let img = ["https://variety.com/wp-content/uploads/2020/05/155485_dsc_1739_20190909102832658_revised_bw_l-e1589787393215.jpg","https://assets.bwbx.io/images/users/iqjWHBFdfxIU/itb3hCN.NoBM/v1/-1x-1.jpg","https://ichef.bbci.co.uk/news/976/cpsprodpb/E84C/production/_128286495_e6bee2b51bfe8d37d9bb1a27b0600745b67a3a19.jpg"];
+
+let index =  0;
+let imglength = img.length;
+
+
+ //slider 
+setInterval(function(){
+     
+  var index1 = img[index]; 
+  index++;
+  
+  if(index >= imglength){
+    index = 0;
+  }
+  
+     
+    main.style.backgroundImage = `url(${index1})`;
+          
+     },4000);
+
+
+
+
+
+
+
+
+var a = 1;
+
+check.addEventListener('click',()=>{
+
+load();
+
+});
+
+
+
+const load = () =>{
+  
+    if(a == 1){
+  checkMsg.style.color = "#fff";
+    a = 0;
+  
+}else{
+  checkMsg.style.color = "#1db954";
+    a = 1;
+  }
+  
+}
+
+load();
+
+
+
+
+ 
+
+
+
+ </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+  </body>
+</html>
