@@ -8,7 +8,9 @@ var passport = require('passport');
 var localstrategy = require('passport-local');
 var id3 = require('node-id3')
 var songModel = require('../models/songModel')
-var crypto = require('crypto')
+var playlistModel = require('../models/playlistModel')
+var crypto = require('crypto');
+const { title } = require('process');
 
 passport.use(new localstrategy(users.authenticate()));
 
@@ -32,8 +34,41 @@ conn.once('open' , () => {
   })
 })
 
-router.get('/', IsLoggedIn ,(req,res,next) => {
-  res.render('index');
+router.get('/', IsLoggedIn ,async (req,res,next) => {
+  await users.findOne({username:req.session.passport.user})
+  .populate('playlist').populate({
+    path:'playlist',
+    populate:{
+      path:'songs',
+      model:'song'
+    }
+  }).then(async (currentUser) => {
+    const Myplaylist = await playlistModel.find().populate('songs')
+    res.render('index' , {currentUser , Myplaylist});
+  })
+})
+
+//poster showing routes 
+router.get('/poster/:postername', (req ,res ,next) => {
+  gfsBucketposter.openDownloadStreamByName(req.params.postername).pipe(res)
+})
+
+//play music routes 
+router.get('/stream/:filename', async (req ,res ,next) => {
+  const currentSong = await songModel.findOne({filename: req.params.filename})
+
+  const stream = gfsBucket.openDownloadStreamByName(req.params.filename);
+
+  res.set('Content-Type' , 'audio/mpeg');
+  res.set('Content-Length' , currentSong.size + 1);
+  res.set('Content-Range' , `bytes ${0}-${currentSong.size - 1}/${currentSong.size} `);
+  res.set('Content-Ranges' , 'byte');
+  res.status(206);
+
+  stream.pipe(res);
+
+
+  
 })
 
 // user authenticate routes 
@@ -44,7 +79,24 @@ router.post('/register' ,(req,res,next) => {
   }
   users.register(newUser,req.body.password)
   .then((result) => {
-    passport.authenticate('local')(req,res,() =>{
+    passport.authenticate('local')(req,res, async () =>{
+
+      const songs = await songModel.find({});
+
+      const defaultPlaylist = await playlistModel.create({
+        name:req.body.username,
+        owner:req.user._id,
+        songs:songs.map(song => song._id),
+      })
+
+      const newUser = await users.findOne({
+        _id:req.user._id
+      })
+
+      newUser.playlist.push(defaultPlaylist._id);
+
+      await newUser.save();
+
       res.redirect('/')
     });
   })
@@ -63,8 +115,9 @@ router.post('/adminlogin',passport.authenticate('local' , {
   successRedirect:'/upload',
 }), function(req, res, next) {});
 
-router.get('/upload' ,  IsAdmin , (req,res,next) => {
-  res.render('upload')
+router.get('/upload' ,  IsLoggedIn , (req,res,next) => {
+  if(req.user.isAdmin) res.render('upload');
+  else res.send('access denied')
 })
 
 router.get('/logout' , (req,res,next) => {
@@ -89,13 +142,18 @@ router.get('/admin' , (req,res,next)  => {
 const storage = multer.memoryStorage()
 const upload = multer({ storage: storage })
 
-router.post('/uploadmusic' , upload.single('song') , async (req,res,next) => {
-  const songData = id3.read(req.file.buffer)
+router.post('/uploadmusic' , upload.array('song') , async (req,res,next) => {
+
+  await Promise.all(req.files.map(async file => {
+
+  
+
+  const songData = id3.read(file.buffer)
 
   var randomName = crypto.randomBytes(20).toString('hex')
   // console.log(req.file);
 
-  Readable.from(req.file.buffer).pipe(gfsBucket.openUploadStream(randomName))
+  Readable.from(file.buffer).pipe(gfsBucket.openUploadStream(randomName))
   
   Readable.from(songData.image.imageBuffer).pipe(gfsBucketposter.openUploadStream(randomName + 'poster'))
 
@@ -103,14 +161,31 @@ router.post('/uploadmusic' , upload.single('song') , async (req,res,next) => {
     title:songData.title,
     artist:songData.artist,
     album:songData.album,
-    size:req.file.size,
+    size:file.size,
     poster:randomName + 'poster',
     filename:randomName, 
   })
+}))
 
-  res.send('music uploaded')
+
+  res.send('music uploaded')  
 })
 
+
+router.get('/playlist' , IsLoggedIn , (req ,res ,next) => {
+  res.render('playlist')
+})
+router.post('/playlist' , IsLoggedIn , async (req ,res ,next) => {
+  const songs = await songModel.find({});
+
+  await playlistModel.create({
+    name:'Animal',
+    owner:req.user._id,
+    songs:songs.filter((song) => {if(song.title === 'Apa Fer Milaangey' || song.title === 'Softly' || song.title === 'Pehle Bhi Main' ) return song._id })
+  }).then(()=> {
+    res.render('playlist')
+  })
+})
 
 
 
@@ -124,16 +199,16 @@ function IsLoggedIn (req, res, next){
     res.redirect('/login');
   }
 }
-function IsAdmin (req, res, next){
-  if (req.isAuthenticated() ) {
-    users.findOne({username:req.session.passport.user}).then((user) => {
-      if(user.isAdmin) return next();
-    })
-  }
-  else{
-    console.warn("username or password is incorrect")
-    res.redirect('/admin');
-  }
-}
+// function IsAdmin (req, res, next){
+//   if (req.isAuthenticated() ) {
+//     users.findOne({username:req.session.passport.user}).then((user) => {
+//       if(user.isAdmin) return next();
+//     })
+//   }
+//   else{
+//     console.warn("username or password is incorrect")
+//     res.redirect('/admin');
+//   }
+// }
 
 module.exports = router;

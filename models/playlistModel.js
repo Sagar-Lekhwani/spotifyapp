@@ -11,7 +11,7 @@ const playlistSchema = mongoose.Schema({
         required:true,
     },
     
-    owner:{
+    poster:{
         type:String,
         default:'music.jpg',
     },

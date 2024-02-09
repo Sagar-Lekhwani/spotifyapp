@@ -4,9 +4,183 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
+  <link rel="stylesheet" href="../stylesheets/index.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body>
-  Home Page 
-  Welcome User
+  <div id="main">
+    <div class="left">
+      <div class="top">
+        <button class="btns"><i class="fa-solid fa-house"></i>Home</button>
+        <button class="btns"><i class="fa-solid fa-magnifying-glass"></i>Search</button>
+      </div>
+      <div class="down">
+        <div id="lib">
+          <div class="p1"><i class="fa-solid fa-lines-leaning"></i></i>Your Library</div>
+          <div class="p2"><i class="fa-solid fa-plus"></i><i class="fa-solid fa-arrow-right"></i></div>
+        </div>
+        <div id="playlist">
+          <h4>playlists</h4>
+          <h4>artists</h4>
+        </div>
+        <div id="recent">
+          <div class="r1"><i id="i" class="fa-solid fa-magnifying-glass"></i><input id="input" type="text" placeholder="Search in Your Library"></div>
+          <div class="r2">
+            Recents 
+            <div class="icon">
+              <i class="fa-solid fa-ellipsis-vertical"></i>
+              <i class="fa-solid fa-bars"></i>
+            </div>
+          </div>
+        </div>
+        <div id="recentplay">
+          <div class="elem" style="color: white;">
+          </div>
+          <div class="elem"></div>
+        </div>
+      </div>
+    </div>
+    <div class="right">
+      <div id="nav">
+        <div id="lnav">
+          <i class="fa-solid fa-chevron-left"></i>
+          <i class="fa-solid fa-chevron-right"></i>
+        </div>
+        <div id="rnav">
+          <h4 id="pre">Explore Premium</h4>
+          <h4><i id="circle" class="fa-solid fa-arrow-down"></i> Install App</h4>
+          <h4><i class="fa-regular fa-bell"></i></h4>
+          <h4 id="logo">S</h4>
+        </div>
+      </div>
+      <div id="all">
+        <h4>All</h4>
+        <h4>Music</h4>
+        <h4>Podcasts</h4>
+      </div>
+      <div id="recently">
+        <% Myplaylist.forEach((play , index) => { %>
+         <% if( index > 0 ) { %> 
+        <div id="play1" class="elem">
+          <div id="cover"></div>
+          <div id="listCover">
+            <div id="playlistImage">
+              <img src="../images/<%= play.poster %>" alt="">
+            </div>
+            <h4><%= play.name %></h4>
+          </div>
+          <i id="<%= play.name %>" onclick="playplaylist('<%= play.name %>')" class="fa-solid fa-play default"></i>
+          <% play.songs.forEach((song,i) => { %>
+          <div id="<%= play.name %><%= i %>" class="default" onclick="songPlay('<%= song.filename %>','<%= i %>', '<%= play.poster %>', '<%= song.title %>' , '<%= song.artist %>' , '<%= play.name %>' )" hidden></div>
+          <% }) %>
+        </div>
+        <% }  %> 
+        <% }) %>
+      </div>
+      <div class="heading">
+        <h1>Songs</h1>
+      </div>
+      <div id="songs">
+        <% currentUser.playlist[0].songs.forEach((song,index) => {  %>
+        <div class="song">
+          <div class="cover">
+            
+            <i id='<%= currentUser.playlist[0].name %><%= index %>' class="fa-solid fa-play" onclick="songPlay('<%= song.filename %>','<%= index %>', '<%= song.poster %>', '<%= song.title %>' , '<%= song.artist %>' , '<%= currentUser.playlist[0].name %>' )"></i>
+          </div>
+          <div class="songcontent">
+            <div id="sp1">
+              <div class="img">
+                <img src="/poster/<%= song.poster %>" alt="">
+              </div>
+            </div>
+            <div id="sp2">
+              <h3><%= song.title %></h3>
+              <h4><%= song.artist %></h4>
+            </div>
+          </div>
+        </div>
+        <% }) %>
+        <div id="ignore"></div>
+      </div>
+    </div>
+    <div id="bottom">
+      <div id="filename">
+        <div class="img">
+          <img id="playImage" src="/poster/<%= currentUser.playlist[0].songs[0].poster %>" alt="">
+        </div>
+        <div class="names">
+          <h5 id="songName" style="color: white;"><%= currentUser.playlist[0].songs[0].title %></h5>
+          <h5 id="songArtist" style="color: #ebe8e87e;"><%= currentUser.playlist[0].songs[0].artist %></h5>
+        </div>
+        <i class="fa-regular fa-heart"></i>
+      </div>
+      <div id="audio">
+        <audio id="play<%=currentUser.playlist[0].name%>0" src="/stream/<%= currentUser.playlist[0].songs[0].filename %>" controls hidden></audio>
+        <div id="a1">
+          <i class="fa-solid fa-shuffle" id="shuffle"></i>
+          <i data-song="<%= currentUser.playlist[0].name %>7" class="fa-solid fa-backward-step" id="previous"></i>
+          <i class="fa-solid fa-play" id="play"></i>
+          <i data-song="<%= currentUser.playlist[0].name %>1" class="fa-solid fa-forward-step" id="forwards"></i>
+          <i class="fa-solid fa-repeat" id="repeat"></i>
+        </div>
+        <div id="a2">
+          <small id="time">0.00</small>
+          <div id="rangeslider">
+            <div class="thumb"></div>
+            <input type="range" id="slider" value="0">
+            <div class="progress"></div>
+          </div>
+          <small id="fulltime">2.35</small>
+        </div>
+      </div>
+      <div id="elements">
+        <i class="fa-solid fa-play"></i>
+        <i class="fa-solid fa-microphone-lines"></i>
+        <i class="fa-solid fa-bars"></i>
+        <i class="fa-solid fa-mobile"></i>
+        <i id="volumeIcon" class="fa-solid fa-volume-high"></i>
+        <div id="rangeslider">
+          <input type="range" min="0" max="100" id="slider" value="5">
+          <div class="progress"></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <script>
+    function playplaylist(id) {
+
+      var current = document.querySelector(`#${id}`);
+      if(current.className.includes('default'))
+      {
+        current.classList.replace('default' , 'playing')
+        current.classList.replace('fa-play' , 'fa-pause')
+
+        const clickevent = new MouseEvent('click')
+        document.querySelector('#audio #play').classList.replace('fa-play' , 'fa-pause');
+        
+        document.querySelector(`#${id}0`).dispatchEvent(clickevent)
+      }
+      else if (current.className.includes('playing')) {
+
+        document.querySelector('#audio audio').pause();
+        current.classList.replace('fa-pause' , 'fa-play')
+        document.querySelector('#audio #play').classList.replace('fa-pause' , 'fa-play');
+        
+        current.classList.replace('playing' , 'pause')
+      }
+      else{
+        document.querySelector('#audio audio').play();
+        current.classList.replace('fa-play' , 'fa-pause')
+        document.querySelector('#audio #play').classList.replace('fa-play' , 'fa-pause');
+
+        current.classList.replace('pause' , 'playing')
+
+      }
+      
+
+    }
+  </script>
+  <script src="../javascripts/script.js"></script>
 </body>
 </html>
